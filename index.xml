@@ -6,25 +6,7 @@
     <description>Recent content on Chris Turner</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Tue, 01 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Project 1</title>
-      <link>/project/project1/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/project/project1/</guid>
-      <description>Test Project 1</description>
-    </item>
-    
-    <item>
-      <title>Project 2</title>
-      <link>/project/project2/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/project/project2/</guid>
-      <description>Test Project 2</description>
-    </item>
-    
+    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hello R Markdown</title>
       <link>/post/2015/07/23/hello-r-markdown/</link>
@@ -34,6 +16,25 @@
       <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
 You can embed an R code chunk like this:
 summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis on March Madness Predictions</title>
+      <link>/project/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>## paste this chunk into the ```{r setup} chunk at the top of your project 1 .Rmd fileknitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = &amp;quot;center&amp;quot;, warning = F, message = F,tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))IntroductionAs an avid basketball fan and with March Madness fully underway, I wanted to do a project exploring predictors for success in the tournament. I found datasets from two different websites. The first dataset I found came from Kaggle and it featured many advanced statistics of college teams as well as how they fared in the NCAA tournament along with their tournament ranking.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>Qinglong Yang qy929
+IntroductionThe dataset used for this project was retreived from vincentarelbundock.github.io/Rdatasets/datasets.html. It includes 1174 observations and contains variables that are possibly linked to violent crime rates. These variables include violent (the violent crime rate), murder (the murder rate), prisoners (the number of incarcerated), afam (percent of state population that is African-American, ages 10 to 64), cauc (percent of state population that is Caucasian, ages 10 to 64), male (the percent of the states population that is a male between the ages of 10 to 29), income (the real per capita income), and law (whether or not the state has a gun carry law).</description>
     </item>
     
     <item>

@@ -7,7 +7,7 @@
     <meta name="author" content="Tony Yang" />
     
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>Project 2</title>
+    <title>Project 2: Modeling, Testing, and Predicting</title>
     <meta name="generator" content="Hugo 0.83.1" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -54,13 +54,13 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="/project/project2/">Project 2</a></strong>
+            <strong><a href="/project/project2/">Project 2: Modeling, Testing, and Predicting</a></strong>
           </h3>
         </div>
  
 <div class="blog-title">
           <h4>
-         December 1, 2020 
+         January 1, 0001 
             &nbsp;&nbsp;
             
           </h4>
@@ -73,8 +73,397 @@
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<div id="test-project-2" class="section level2">
-<h2>Test Project 2</h2>
+<p>Qinglong Yang qy929</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The dataset used for this project was retreived from vincentarelbundock.github.io/Rdatasets/datasets.html. It includes 1174 observations and contains variables that are possibly linked to violent crime rates. These variables include violent (the violent crime rate), murder (the murder rate), prisoners (the number of incarcerated), afam (percent of state population that is African-American, ages 10 to 64), cauc (percent of state population that is Caucasian, ages 10 to 64), male (the percent of the states population that is a male between the ages of 10 to 29), income (the real per capita income), and law (whether or not the state has a gun carry law).</p>
+<pre class="r"><code>library(tidyverse)
+library(readr)
+guns &lt;- read_csv(&quot;Gunssds.csv&quot;)
+head(guns)</code></pre>
+<pre><code>## # A tibble: 6 x 14
+## X1 year violent murder robbery prisoners afam cauc male
+population income density state
+## &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+&lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;
+## 1 1 1977 414.  14.2 96.8 83 8.38 55.1 18.2 3.78 9563.
+0.0746 Alabama
+## 2 2 1978 419.  13.3 99.1 94 8.35 55.1 18.0 3.83 9932
+0.0756 Alabama
+## 3 3 1979 413.  13.2 110.  144 8.33 55.1 17.8 3.87 9877.
+0.0762 Alabama
+## 4 4 1980 448.  13.2 132.  141 8.41 54.9 17.7 3.90 9541.
+0.0768 Alabama
+## 5 5 1981 470.  11.9 126.  149 8.48 54.9 17.7 3.92 9548.
+0.0772 Alabama
+## 6 6 1982 448.  10.6 112 183 8.51 54.9 17.5 3.93 9479.
+0.0773 Alabama
+## # ... with 1 more variable: law &lt;chr&gt;</code></pre>
+<pre class="r"><code>#Manova test
+man1&lt;-manova(cbind(violent,murder,prisoners,afam,cauc,male)~law,data=guns)
+summary(man1,tol=0)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## law 1 0.1935 46.624 6 1166 &lt; 2.2e-16 ***
+## Residuals 1171
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#Anova test
+summary(aov(guns$violent~guns$law))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law 1 5605560 5605560 52.36 8.32e-13 ***
+## Residuals 1171 125355176 107050
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(guns$murder~guns$law))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law 1 2135 2134.8 38.94 6.09e-10 ***
+## Residuals 1171 64190 54.8
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(guns$prisoners~guns$law))</code></pre>
+<pre><code>##               Df   Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law       1    67344   67344   2.106  0.147
+## Residuals   1171 37437770   31971</code></pre>
+<pre class="r"><code>summary(aov(guns$afam~guns$law))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law 1 947 946.6 41.01 2.19e-10 ***
+## Residuals 1171 27029 23.1
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(guns$cauc~guns$law))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law 1 5035 5035 55.29 2e-13 ***
+## Residuals 1171 106642 91
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(guns$male~guns$law))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law 1 270 270.22 97.48 &lt;2e-16 ***
+## Residuals 1171 3246 2.77
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(guns$income~guns$law))</code></pre>
+<pre><code>##               Df    Sum Sq Mean Sq F value Pr(&gt;F)
+## guns$law       1 1.200e+01      12       0  0.999
+## Residuals   1171 7.648e+09 6531259</code></pre>
+<pre class="r"><code>0.05/8 #(1 manova,7 anova)</code></pre>
+<pre><code>## [1] 0.00625</code></pre>
+<pre class="r"><code>#Calculating probability of a type 1 error
+1-(0.95)^8</code></pre>
+<pre><code>## [1] 0.3365796</code></pre>
+<p>First off I conducted a one-way manova test. This was conducted in order to see whether gun laws have any effect on 6 unique dependent variables which include murder,prisoners,afam,cauc,male, and income. The number of unique observations in each group was far greater than 25. As a result, it can be assumed that the variables should have some kind of normal distribution. Not only that, it can also be assumed that the samples were done at random and all the observations were made independent of each other. Also, we can assume that there are no unusual outliers as the dataset was taken with several datapoints throughout the US. Lastly, it is very unlikely that the dependent variables were not correlated as they logically seem to be related in some way to each other as a higher murder rate normally brings a higher violence rate and higher population numbers will likely increase crime regardless of race. The results obtained from the manova test give evidence that at least one of the mean values of the dependent variables differ very significantly from the violence rate (p=&lt;2.2e-16) even after the bonferri adjustment is made as p remains much significantly larger than 0.005. After this was done, Post-anova tests were conducted in order to see which of the dependent variables are significant with respect to the violent crime rate. After the Bonferri correction it was found that the variables violent, murder, afam, cauc, and male were still statistically significant. Pairwise t-tests were not performed as the categorical variable law is binary (yes or no) so it would be redundant to perform a pairwise test on it. A total of 8 tests were performed, and the probability of having a type 1 error was calculated to be 33.66%.</p>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>Randomization Test</h2>
+<pre class="r"><code>#Test statistic calculation
+yes&lt;-guns%&gt;%filter(law==&quot;yes&quot;)
+no&lt;-guns%&gt;%filter(law==&quot;no&quot;)
+mean(no$violent)-mean(yes$violent)</code></pre>
+<pre><code>## [1] 161.1868</code></pre>
+<pre class="r"><code>#Randomizing data
+rand_dist&lt;-vector()
+for(i in 1:5000){
+new&lt;-data.frame(violent=sample(guns$violent),condition=guns$law)
+rand_dist[i]&lt;-mean(new[new$condition==&quot;yes&quot;,]$violent)-
+mean(new[new$condition==&quot;no&quot;,]$violent)}
+hist(rand_dist,main=&quot;&quot;,ylab=&quot;&quot;);abline(v=-161.1868,col=&quot;red&quot;)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Calculating P-value
+mean(rand_dist&gt;161.1868)*2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>The test’s null hypothesis states that the difference between mean violent crime in areas with gun laws and areas without gun laws is zero or insignificant. THe alternative hypothesis is that there is a significant difference. The mean difference between the samples of violent crime rates between the two groups yielded a value of 161.1868. After conducting the test on this value, it was deemed that this value was significant as the p-value was found to be 0. This is further evidenced by the fact that the red line does not even show up on the histogram. As a result, it is reasonable to reject the null hypothesis and accept the alternative hypothesis. Therefore we can state that the difference in mean violence rate between states possessing gun control laws and states that do not possess gun control laws is not a zero value.</p>
+</div>
+<div id="linear-regression" class="section level2">
+<h2>Linear Regression</h2>
+<pre class="r"><code>#predicting violence rate based off income, male, and murder rate.
+guns$c_income&lt;-guns$income-mean(guns$income)
+guns$c_male&lt;-guns$male-mean(guns$male)
+guns$c_murder&lt;-guns$murder-mean(guns$murder)
+fit&lt;-lm(violent~c_income*c_male*c_murder,data=guns);summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = violent ~ c_income * c_male * c_murder,
+data = guns)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -617.87 -89.70 -9.71 81.90 722.37
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 5.343e+02 5.074e+00 105.285 &lt; 2e-16 ***
+## c_income 3.105e-02 2.139e-03 14.519 &lt; 2e-16 ***
+## c_male -2.235e+01 3.066e+00 -7.288 5.77e-13 ***
+## c_murder 5.213e+01 1.098e+00 47.491 &lt; 2e-16 ***
+## c_income:c_male 4.202e-03 9.373e-04 4.483 8.07e-06 ***
+## c_income:c_murder -3.807e-03 2.547e-04 -14.946 &lt; 2e-16
+***
+## c_male:c_murder -7.663e+00 6.826e-01 -11.227 &lt; 2e-16 ***
+## c_income:c_male:c_murder 6.116e-04 9.495e-05 6.442
+1.72e-10 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 148.9 on 1165 degrees of
+freedom
+## Multiple R-squared: 0.8028, Adjusted R-squared: 0.8016
+## F-statistic: 677.6 on 7 and 1165 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Plotting linear regression
+guns%&gt;%ggplot(aes(c_income,violent))+
+geom_point()+
+geom_smooth(method=&#39;lm&#39;,se=F)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>guns%&gt;%ggplot(aes(c_male,violent))+
+geom_point()+
+geom_smooth(method=&#39;lm&#39;,se=F)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-3-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(guns$income,guns$violent)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-3-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(guns$male,guns$violent)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-3-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#homoskedasticity
+library(lmtest)
+bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 316.26, df = 7, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>resids&lt;-fit$residuals
+fitvals&lt;-fit$fitted.values
+#normality
+ggplot()+
+geom_point(aes(fitvals,resids))+
+geom_hline(yintercept=0,color=&#39;green&#39;)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-3-5.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Summary statistic
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = violent ~ c_income * c_male * c_murder,
+data = guns)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -617.87 -89.70 -9.71 81.90 722.37
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 5.343e+02 5.074e+00 105.285 &lt; 2e-16 ***
+## c_income 3.105e-02 2.139e-03 14.519 &lt; 2e-16 ***
+## c_male -2.235e+01 3.066e+00 -7.288 5.77e-13 ***
+## c_murder 5.213e+01 1.098e+00 47.491 &lt; 2e-16 ***
+## c_income:c_male 4.202e-03 9.373e-04 4.483 8.07e-06 ***
+## c_income:c_murder -3.807e-03 2.547e-04 -14.946 &lt; 2e-16
+***
+## c_male:c_murder -7.663e+00 6.826e-01 -11.227 &lt; 2e-16 ***
+## c_income:c_male:c_murder 6.116e-04 9.495e-05 6.442
+1.72e-10 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 148.9 on 1165 degrees of
+freedom
+## Multiple R-squared: 0.8028, Adjusted R-squared: 0.8016
+## F-statistic: 677.6 on 7 and 1165 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Accounting for standard errors
+library(sandwich)
+coeftest(fit,vcov=vcovHC(fit))</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 5.3426e+02 5.8228e+00 91.7528 &lt; 2.2e-16 ***
+## c_income 3.1052e-02 2.6622e-03 11.6638 &lt; 2.2e-16 ***
+## c_male -2.2348e+01 3.8133e+00 -5.8607 5.995e-09 ***
+## c_murder 5.2125e+01 1.5938e+00 32.7048 &lt; 2.2e-16 ***
+## c_income:c_male 4.2023e-03 1.3583e-03 3.0939 0.0020225
+**
+## c_income:c_murder -3.8071e-03 5.1167e-04 -7.4405
+1.942e-13 ***
+## c_male:c_murder -7.6629e+00 9.1493e-01 -8.3754 &lt; 2.2e-16
+***
+## c_income:c_male:c_murder 6.1161e-04 1.7468e-04 3.5013
+0.0004806 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#Regression w/ no interaction
+fit1&lt;-lm(violent~c_income+c_male+c_murder,data=guns)
+
+#Conduction ratio test
+lrtest(fit1,fit)</code></pre>
+<pre><code>## Likelihood ratio test
+##
+## Model 1: violent ~ c_income + c_male + c_murder
+## Model 2: violent ~ c_income * c_male * c_murder
+## #Df LogLik Df Chisq Pr(&gt;Chisq)
+## 1 5 -7688.8
+## 2 9 -7529.1 4 319.3 &lt; 2.2e-16 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<p>Everytime income increases by 1, violence correspondingly increases by a factor of 3.105e-02. On the other hand, for every 1 unit increase in male percentage, it is followed by a -2.235e+01 unit increase in violence. Lastly, every time there is a one unit increase in the murder rate, there is a 5.213e+01 increase in the violence rate. The scatterplot between all of the variables show a generally linear pattern however there are some noticeable outlier patchces in the data. A BP test resulted in a p-value that is much smaller than 0.05. As a result, the test shows that heteroskedasticity does not exist in the data. Also, it can be seen that the histogram for residuals looks symetrical and appears to follow a normal distribution. Also because the sample size is very large, it appears the data is likely normal.The regression was run using robust standard errors. The results showed that the dependent variables are all statistically significant in being used to determine the violence rate since all of the p-values are below 0.05. 80.3% of the variation in violence rate can be explained by the percentage of males, income, and murder level based off the summary of the fit. Lastly, the likelihood ratio test was conducted in the above code, there was a statistically significant improvement for the following predictor variables: males, income, and murder levels.</p>
+<pre class="r"><code>#Bootstrap errors
+samp_distn&lt;-replicate(5000, {
+boot_dat&lt;-guns[sample(nrow(guns),replace=TRUE),]
+fit2&lt;-lm(violent~income*male*murder,data=boot_dat)
+coef(fit2)
+})
+samp_distn%&gt;%t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>## (Intercept) income male murder income:male income:murder
+male:murder income:male:murder
+## 1 443.0665 0.0327647 29.50599 41.34603 0.002243838
+0.002561749 2.722398 0.0001814745</code></pre>
+<p>The bootsrapped standard errors are much larger compared to both the original standard errors and the robust standard errors. They were larger for all of the individual variables:income, male, and murder levels. The bootstrapped standard error of the interaction between glucose and insulin was larger than both the original and robust standard errors. The bootstraped standard error for interaction between income:male, income:murder, and male:murder were also larger than the standard and robust errors. Because of the fact that the bootstrapped standard errors were all larger compared to the original and the robust standard errors, the p-values were also larger as a result which makes sense given the nature of standard errors.</p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<pre class="r"><code>#logistic regression to predict if there is a gun law 
+guns$law&lt;-ifelse(guns$law==&quot;yes&quot;,1,0)
+fit3&lt;-glm(law~violent+male,data=guns,family=binomial(link=&quot;logit&quot;));coeftest(fit3)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) 8.76307168 0.84651060 10.3520 &lt; 2.2e-16 ***
+## violent -0.00304386 0.00034082 -8.9309 &lt; 2.2e-16 ***
+## male -0.54069065 0.05112083 -10.5767 &lt; 2.2e-16 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(-0.00304386)</code></pre>
+<pre><code>## [1] 0.9969608</code></pre>
+<pre class="r"><code>exp(-0.54069065)</code></pre>
+<pre><code>## [1] 0.5823459</code></pre>
+<pre class="r"><code>guns$prob&lt;-predict(fit3,type = &quot;response&quot;)
+table(truth=guns$law,prediction=as.numeric(guns$prob&gt;.5))%&gt;%addmargins</code></pre>
+<pre><code>##      prediction
+## truth    0    1  Sum
+##   0    838   50  888
+##   1    197   88  285
+##   Sum 1035  138 1173</code></pre>
+<pre class="r"><code>#Accuracy
+(838+88)/1173</code></pre>
+<pre><code>## [1] 0.7894288</code></pre>
+<pre class="r"><code>#Sensitivity 
+88/285</code></pre>
+<pre><code>## [1] 0.3087719</code></pre>
+<pre class="r"><code>#Specificity
+838/888</code></pre>
+<pre><code>## [1] 0.9436937</code></pre>
+<pre class="r"><code>#Precision
+88/138</code></pre>
+<pre><code>## [1] 0.6376812</code></pre>
+<pre class="r"><code>#ROC Plot and AUC
+
+tdat&lt;-guns%&gt;%mutate(prediction=ifelse(prob&gt;0.5,1,0))
+classify&lt;-tdat%&gt;%transmute(prob,prediction,truth=law)
+library(plotROC)
+ROCplot &lt;- ggplot(guns) +geom_roc(aes(d=law, m=prob), n.cuts = 0) + geom_segment(aes(x=0, xend=1, y=0, yend=1))
+ROCplot</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.7606468</code></pre>
+<pre class="r"><code>#Density plot
+library(ggplot2)
+guns$logit&lt;-predict(fit3) #get predicted log-odds
+guns$law&lt;-as.factor(guns$law)
+ggplot(guns,aes(logit, fill=law))+geom_density(alpha=.3)+
+geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="/project/project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Creating function
+class_diag&lt;-function(probs,truth){
+tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+#Auc Calculation
+ord&lt;-order(probs, decreasing=TRUE)
+probs &lt;- probs[ord]; truth &lt;- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth))
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+n &lt;- length(TPR)
+auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+
+#10-fold cross validation
+set.seed(1234)
+k=10
+guns1&lt;-guns%&gt;%dplyr::select(-prob)
+data1&lt;-guns1[sample(nrow(guns1)),]
+folds&lt;-cut(seq(1:nrow(data1)),breaks=k,labels=F)
+diags&lt;-NULL
+for(i in 1:k){
+## Training set
+train&lt;-data1[folds!=i,]
+test&lt;-data1[folds==i,]
+truth&lt;-test$law
+## Training model
+fit3&lt;-glm(law~violent+male,data=guns,family=binomial(link=&quot;logit&quot;))
+probs&lt;-predict(fit3,newdata = test,type=&quot;response&quot;)
+## Test model
+diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) </code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7893597 0.3110256 0.9436841 0.6398298 0.7633035</code></pre>
+<p>Violent crime rate multiplies the odds of their being a gun law by 0.9969608 and every percent of males increasing in the population between the ages of 10 to 29 multiplies the odds of their being a gun law by 0.5823459. This means that there is actually a negative correlation between male percent and violent crime with the chance that there are gun laws. The accuracy of this model was found to be 78.9 percent, the sensitivity was found to be 30.9 percent, the specificity was found to be 94.3 percent, and the precision for the model was found to be 63.8 percent. The area under the ROC curve was .76. This means the model is somewhat decent at predicting whether or not a state has gun laws. A 10-cross validation test was performed. It showed that the out of sample accuracy was 78.9, sensitivity was 31.1, specificity was 94.4, and AUC was 76.6 percent.</p>
+</div>
+<div id="lasso-regression" class="section level2">
+<h2>Lasso Regression</h2>
+<pre class="r"><code>#Lasso regression
+library(glmnet)
+guns2&lt;-guns%&gt;%dplyr::select(violent,murder,income,male,law)
+y&lt;-as.matrix(guns2$law)
+x&lt;-model.matrix(law~(.),data=guns2)[,-1]
+cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;)
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 5 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                        s0
+## (Intercept)  7.123327e+00
+## violent     -1.908187e-03
+## murder       .           
+## income      -3.687199e-05
+## male        -4.336520e-01</code></pre>
+<pre class="r"><code>set.seed(1234)
+k=10
+guns1&lt;-guns%&gt;%dplyr::select(-prob)
+data1&lt;-guns1[sample(nrow(guns1)),]
+folds&lt;-cut(seq(1:nrow(data1)),breaks=k,labels=F)
+diags&lt;-NULL
+for(i in 1:k){
+## Creating test
+train&lt;-data1[folds!=i,]
+test&lt;-data1[folds==i,]
+truth&lt;-test$law
+## Training
+fit4&lt;-glm(law~violent+male+income,data=guns,family=&quot;binomial&quot;)
+probs&lt;-predict(fit4,newdata = test,type=&quot;response&quot;)
+## Testing
+diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) #average across all k results</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7970520 0.3109124 0.9538015 0.6867760 0.7731451</code></pre>
+<p>After the lasso regression was run on the data, only glucose, BMI, and age were shown to be important in determining if there was a gun control law. A 10-fold cross validation test with these variables was conducted. The accuracy of the
+model increased very slightly to 79.7% in comparison to 78.9% which was based on a regression without including murder rate. It makes sense that the accuracy increased as one less factor has to be considered. The model’s out of sample AUC was 77.3 percent which was also better than the AUC’s of the logistic regressions above (76.6 percent).</p>
+<p>…</p>
 </div>
 
             

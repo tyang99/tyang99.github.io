@@ -7,7 +7,7 @@
     <meta name="author" content="Tony Yang" />
     
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>Project 1</title>
+    <title>Project 1: Exploratory Data Analysis on March Madness Predictions</title>
     <meta name="generator" content="Hugo 0.83.1" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -54,13 +54,13 @@
       <div class="container">
         <div class="blog-post">
           <h3>
-            <strong><a href="/project/project1/">Project 1</a></strong>
+            <strong><a href="/project/project1/">Project 1: Exploratory Data Analysis on March Madness Predictions</a></strong>
           </h3>
         </div>
  
 <div class="blog-title">
           <h4>
-         December 1, 2020 
+         January 1, 0001 
             &nbsp;&nbsp;
             
           </h4>
@@ -73,8 +73,300 @@
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<div id="test-project-1" class="section level2">
-<h2>Test Project 1</h2>
+<pre class="r"><code>## paste this chunk into the ```{r setup} chunk at the top of your project 1 .Rmd file
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = &quot;center&quot;, warning = F, message = F,
+tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>As an avid basketball fan and with March Madness fully underway, I wanted to do a project exploring predictors for success in the tournament. I found datasets from two different websites. The first dataset I found came from Kaggle and it featured many advanced statistics of college teams as well as how they fared in the NCAA tournament along with their tournament ranking. I found the second dataset on data.world and it features every NCAA team along with their BPI offensive, defensive, and overall rankings. BPI is a metric used by many sports predicting websites as a gauge of overall team strength. When filling out March Madness brackets BPI is shown for fans to help make picks and used by the selection committee to determine seeding for the teams. As a result, I found it interesting to see how accurately this metric will be able to predict team success in the tournament. There are also several variables inside the first dataset that I want to compare to team success include adjusted defensive efficiency and WAB, which is similar to BPI in that it looks at wins over a replacement team. However BPI defines a replacement team as a an average division one team whereas WAB defines it as an average bubble team. I expect to find a greater correlation with defensive BPI and defensive efficiency as defense has traditionally been a better predictor for me when I have filled out brackets. I hypothesize the reason for this being that good offensive teams are more reliant on shooting the ball well to win games. In big moments when nerves are higher, this dependency on shooting can work against teams and make them play worse on offense than they usually do, whereas defense is usually very consistent. Finally, while there were multiple years available in the datasets, I chose to use the 2017 year as that was the most recent tournament data provided in the datasets.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.3     v purrr   0.3.4
+## v tibble  3.1.1     v dplyr   1.0.6
+## v tidyr   1.1.3     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.1</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 4.0.4</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>#Importing dataset 1
+bpi &lt;- read.csv(&quot;bpi.csv&quot;)
+head(bpi)</code></pre>
+<pre><code>##   ï..Rk           Team     Conf  W.L BPI.Off BPI.Def  BPI Year
+## 1     1        Gonzaga      WCC 37-2    10.8     9.5 20.4 2017
+## 2     2      Villanova Big East 32-4    11.9     8.4 20.3 2017
+## 3     3 North Carolina      ACC 33-7    11.3     8.2 19.4 2017
+## 4     4         Kansas   Big 12 31-5    12.1     6.3 18.4 2017
+## 5     5        Florida      SEC 27-9     8.5     9.6 18.1 2017
+## 6     6     Louisville      ACC 25-9     7.9     9.9 17.8 2017</code></pre>
+<pre class="r"><code>#Importing dataset 2
+team_data&lt;-read.csv(&quot;cbb17.csv&quot;)
+head(team_data)</code></pre>
+<pre><code>##             TEAM CONF  G  W ADJOE ADJDE BARTHAG EFG_O EFG_D  TOR TORD  ORB  DRB
+## 1        Gonzaga  WCC 39 37 117.8  86.3  0.9728  56.6  41.1 16.2 17.1 30.0 26.2
+## 2 North Carolina  ACC 39 33 121.0  91.5  0.9615  51.7  48.1 16.2 18.6 41.3 25.0
+## 3      Villanova   BE 36 32 122.2  92.5  0.9611  57.5  48.1 17.1 20.1 30.2 27.8
+## 4         Kansas  B12 36 31 121.5  94.5  0.9472  56.1  48.1 17.6 18.6 34.1 29.7
+## 5       Kentucky  SEC 38 32 118.3  91.3  0.9517  52.9  47.5 15.7 19.2 33.5 27.7
+## 6     Louisville  ACC 34 25 117.6  91.5  0.9469  51.4  45.7 16.0 19.6 36.7 28.5
+##    FTR FTRD X2P_O X2P_D X3P_O X3P_D ADJ_T  WAB POSTSEASON SEED
+## 1 39.0 26.9  56.3  40.0  38.2  29.0  71.5  7.7        2ND    1
+## 2 34.3 31.6  51.0  46.3  35.5  33.9  72.8  8.4  Champions    1
+## 3 35.0 22.1  59.2  49.1  36.9  31.1  65.6 11.1        R32    1
+## 4 36.0 30.0  53.6  45.3  40.4  35.6  71.4 11.0         E8    1
+## 5 40.9 33.5  52.9  48.3  35.3  30.6  73.7  9.0         E8    2
+## 6 34.0 38.8  50.5  44.8  35.5  31.6  69.4  6.9        R32    2</code></pre>
+</div>
+<div id="dataset-joinpivot" class="section level1">
+<h1>Dataset Join/Pivot</h1>
+<p>I chose to do a left join with BPI as my dataset that I want to keep. BPI contains many of the other variables I want to look into like defensive efficiency and WAB and compare. Joining the data this way also allowed me to eliminate all the teams that did not make the tournament leaving only the 68 teams that did (While the tournament itself is often seen as 64 teams, 68 teams technically make it as there are play ins for two 16 seeds and two 11 seeds).</p>
+<pre class="r"><code>#Joining the datasets
+total_data&lt;-bpi%&gt;%left_join(team_data,by=c(&quot;Team&quot;=&quot;TEAM&quot;))%&gt;%na.omit
+head(total_data)</code></pre>
+<pre><code>##   ï..Rk           Team     Conf  W.L BPI.Off BPI.Def  BPI Year CONF  G  W ADJOE
+## 1     1        Gonzaga      WCC 37-2    10.8     9.5 20.4 2017  WCC 39 37 117.8
+## 2     2      Villanova Big East 32-4    11.9     8.4 20.3 2017   BE 36 32 122.2
+## 3     3 North Carolina      ACC 33-7    11.3     8.2 19.4 2017  ACC 39 33 121.0
+## 4     4         Kansas   Big 12 31-5    12.1     6.3 18.4 2017  B12 36 31 121.5
+## 5     5        Florida      SEC 27-9     8.5     9.6 18.1 2017  SEC 36 27 116.6
+## 6     6     Louisville      ACC 25-9     7.9     9.9 17.8 2017  ACC 34 25 117.6
+##   ADJDE BARTHAG EFG_O EFG_D  TOR TORD  ORB  DRB  FTR FTRD X2P_O X2P_D X3P_O
+## 1  86.3  0.9728  56.6  41.1 16.2 17.1 30.0 26.2 39.0 26.9  56.3  40.0  38.2
+## 2  92.5  0.9611  57.5  48.1 17.1 20.1 30.2 27.8 35.0 22.1  59.2  49.1  36.9
+## 3  91.5  0.9615  51.7  48.1 16.2 18.6 41.3 25.0 34.3 31.6  51.0  46.3  35.5
+## 4  94.5  0.9472  56.1  48.1 17.6 18.6 34.1 29.7 36.0 30.0  53.6  45.3  40.4
+## 5  88.9  0.9576  51.6  45.8 16.9 21.0 32.1 29.5 40.2 34.0  50.3  45.7  35.9
+## 6  91.5  0.9469  51.4  45.7 16.0 19.6 36.7 28.5 34.0 38.8  50.5  44.8  35.5
+##   X3P_D ADJ_T  WAB POSTSEASON SEED
+## 1  29.0  71.5  7.7        2ND    1
+## 2  31.1  65.6 11.1        R32    1
+## 3  33.9  72.8  8.4  Champions    1
+## 4  35.6  71.4 11.0         E8    1
+## 5  30.5  70.2  6.4         E8    4
+## 6  31.6  69.4  6.9        R32    2</code></pre>
+<pre class="r"><code>#Showing only teams in tournament are in dataset
+nrow(bpi)-(nrow(bpi)-nrow(total_data))</code></pre>
+<pre><code>## [1] 68</code></pre>
+<pre class="r"><code>#Wide pivot on the data frame
+widepivot&lt;- total_data %&gt;% pivot_wider(names_from = POSTSEASON, values_from = POSTSEASON)  
+head(widepivot)</code></pre>
+<pre><code>## # A tibble: 6 x 37
+##   ï..Rk Team     Conf  W.L   BPI.Off BPI.Def   BPI  Year CONF      G     W ADJOE
+##   &lt;int&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+## 1     1 Gonzaga  WCC   37-2     10.8     9.5  20.4  2017 WCC      39    37  118.
+## 2     2 Villano~ Big ~ 32-4     11.9     8.4  20.3  2017 BE       36    32  122.
+## 3     3 North C~ ACC   33-7     11.3     8.2  19.4  2017 ACC      39    33  121 
+## 4     4 Kansas   Big ~ 31-5     12.1     6.3  18.4  2017 B12      36    31  122.
+## 5     5 Florida  SEC   27-9      8.5     9.6  18.1  2017 SEC      36    27  117.
+## 6     6 Louisvi~ ACC   25-9      7.9     9.9  17.8  2017 ACC      34    25  118.
+## # ... with 25 more variables: ADJDE &lt;dbl&gt;, BARTHAG &lt;dbl&gt;, EFG_O &lt;dbl&gt;,
+## #   EFG_D &lt;dbl&gt;, TOR &lt;dbl&gt;, TORD &lt;dbl&gt;, ORB &lt;dbl&gt;, DRB &lt;dbl&gt;, FTR &lt;dbl&gt;,
+## #   FTRD &lt;dbl&gt;, X2P_O &lt;dbl&gt;, X2P_D &lt;dbl&gt;, X3P_O &lt;dbl&gt;, X3P_D &lt;dbl&gt;,
+## #   ADJ_T &lt;dbl&gt;, WAB &lt;dbl&gt;, SEED &lt;int&gt;, 2ND &lt;chr&gt;, R32 &lt;chr&gt;, Champions &lt;chr&gt;,
+## #   E8 &lt;chr&gt;, S16 &lt;chr&gt;, F4 &lt;chr&gt;, R64 &lt;chr&gt;, R68 &lt;chr&gt;</code></pre>
+<pre class="r"><code>#Long pivot on the data frame after the wide pivot
+tidy&lt;-widepivot%&gt;%pivot_longer(c(&#39;Champions&#39;,&#39;E8&#39;,&#39;2ND&#39;,&#39;R32&#39;,&#39;S16&#39;,&#39;F4&#39;,&#39;R68&#39;,&#39;R64&#39;),names_to=&quot;POSTSEASON&quot;,values_to=&quot;result&quot;,values_drop_na = T)%&gt;%subset(select=-c(result))
+head(tidy)</code></pre>
+<pre><code>## # A tibble: 6 x 30
+##   ï..Rk Team     Conf  W.L   BPI.Off BPI.Def   BPI  Year CONF      G     W ADJOE
+##   &lt;int&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+## 1     1 Gonzaga  WCC   37-2     10.8     9.5  20.4  2017 WCC      39    37  118.
+## 2     2 Villano~ Big ~ 32-4     11.9     8.4  20.3  2017 BE       36    32  122.
+## 3     3 North C~ ACC   33-7     11.3     8.2  19.4  2017 ACC      39    33  121 
+## 4     4 Kansas   Big ~ 31-5     12.1     6.3  18.4  2017 B12      36    31  122.
+## 5     5 Florida  SEC   27-9      8.5     9.6  18.1  2017 SEC      36    27  117.
+## 6     6 Louisvi~ ACC   25-9      7.9     9.9  17.8  2017 ACC      34    25  118.
+## # ... with 18 more variables: ADJDE &lt;dbl&gt;, BARTHAG &lt;dbl&gt;, EFG_O &lt;dbl&gt;,
+## #   EFG_D &lt;dbl&gt;, TOR &lt;dbl&gt;, TORD &lt;dbl&gt;, ORB &lt;dbl&gt;, DRB &lt;dbl&gt;, FTR &lt;dbl&gt;,
+## #   FTRD &lt;dbl&gt;, X2P_O &lt;dbl&gt;, X2P_D &lt;dbl&gt;, X3P_O &lt;dbl&gt;, X3P_D &lt;dbl&gt;,
+## #   ADJ_T &lt;dbl&gt;, WAB &lt;dbl&gt;, SEED &lt;int&gt;, POSTSEASON &lt;chr&gt;</code></pre>
+<p>Because the data is already tidy and the join eliminated any need to tidy the data, the functions above are redundant and don’t serve any real purpose. Each team has a unique position that they ended in the tournament and as a result there are no duplicates in the postseason finishes. As a result, when pivot longer was used a column had to be deleted as both of the columns would have the same values.</p>
+</div>
+<div id="summary-statistics" class="section level1">
+<h1>Summary Statistics</h1>
+<p>This section demonstrates the 6 core dplyr functions. Data was first filtered based off the Big 12 (our conference) as I wanted to see how Big 12 teams performed in the tournament as well as some of their advanced stats. I then created a selected data dataset for use later on with only the relevant columns that I wanted to observe as the merged dataset came with several extra variables. Next, I used the help of the separate function to separate the string contained in W.L by the two numbers contained. The first number was assigned to a wins column and the second number was assigned to a losses column. Next, both wins and losses were made numeric from a string and then mutated to a new column called win_percentage to show win percentage by dividing wins by wins plus losses.</p>
+<p>I then observed different summary statistics on wins, BPI, and WAB. Some low/mid major conferences only had one team make the tournament as they did not have any at large bids thus resulting in NAs for standard deviation and variance. Some interesting associations I found based off of the summary statistics includes that the WCC, despite having the highest mean BPI, only had the third highest mean WAB. This is likely due to strength of schedule as the WCC overall as a conference is much weaker than conferences like the Big 12 and ACC where every team is traditionally competitive to some degree. On the other hand, the WCC is very top loaded with Gonzaga, St. Mary’s, and BYU being much stronger than the other teams. Here it can be demonstrated how WAB places much more emphasis on the level of competition than BPI does. Another interesting association that can be seen is that BPI ranked the Sun Belt team Troy with a positive BPI despite it having the second worst WAB. Looking into how Troy’s actual game played out it can be seen that they played a very noncompetitive game against Duke. It seems that WAB is more accurate of a predictor. However this is only one data point so we will look towards graphs to provide a much more coherent picture. On the other hand, the team with the most wins was Gonzaga which had 37 wins on the season and the team with the least wins was South Dakota State with just 18.</p>
+<pre class="r"><code>#Filtering data for big 12 teams and then selecting for certain variables of interest
+big12&lt;-total_data%&gt;%filter(Conf==&quot;Big 12&quot;)%&gt;%arrange(BPI)
+head(big12)</code></pre>
+<pre><code>##   ï..Rk          Team   Conf   W.L BPI.Off BPI.Def  BPI Year CONF  G  W ADJOE
+## 1    37    Kansas St. Big 12 21-14     5.1     5.1 10.2 2017  B12 35 21 112.2
+## 2    26  Oklahoma St. Big 12 20-13    11.1     1.3 12.4 2017  B12 32 20 126.8
+## 3    21      Iowa St. Big 12 24-11     9.6     5.1 14.7 2017  B12 35 24 120.0
+## 4    18        Baylor Big 12  27-8     7.9     7.1 15.1 2017  B12 34 27 116.4
+## 5     8 West Virginia Big 12  28-9     8.2     9.4 17.6 2017  B12 37 28 115.4
+## 6     4        Kansas Big 12  31-5    12.1     6.3 18.4 2017  B12 36 31 121.5
+##   ADJDE BARTHAG EFG_O EFG_D  TOR TORD  ORB  DRB  FTR FTRD X2P_O X2P_D X3P_O
+## 1  94.2  0.8818  52.7  49.6 19.1 22.1 29.5 32.3 41.1 33.4  51.8  45.5  36.2
+## 2 102.3  0.9221  54.0  53.2 18.2 20.3 38.3 31.9 37.4 45.4  50.4  52.4  40.3
+## 3  96.2  0.9265  55.0  49.0 14.1 19.5 25.7 31.6 27.6 25.6  51.8  47.5  40.0
+## 4  93.9  0.9226  52.5  46.1 20.6 17.1 39.8 29.4 33.9 30.1  52.2  45.0  35.3
+## 5  89.3  0.9498  51.3  48.8 17.0 27.6 37.9 31.9 38.9 42.5  49.8  46.5  36.2
+## 6  94.5  0.9472  56.1  48.1 17.6 18.6 34.1 29.7 36.0 30.0  53.6  45.3  40.4
+##   X3P_D ADJ_T  WAB POSTSEASON SEED
+## 1  38.2  67.2  1.7        R64   11
+## 2  36.4  72.9  3.3        R64   10
+## 3  34.6  69.6  6.5        R32    5
+## 4  32.2  65.1  7.9        S16    3
+## 5  35.3  72.2  6.4        S16    4
+## 6  35.6  71.4 11.0         E8    1</code></pre>
+<pre class="r"><code>#Selecting for desired vairables
+selected_data&lt;-total_data%&gt;%select(W.L,Team,BPI.Off,BPI.Def,BPI,ADJOE,ADJDE,WAB,POSTSEASON,Conf)
+head(selected_data)</code></pre>
+<pre><code>##    W.L           Team BPI.Off BPI.Def  BPI ADJOE ADJDE  WAB POSTSEASON     Conf
+## 1 37-2        Gonzaga    10.8     9.5 20.4 117.8  86.3  7.7        2ND      WCC
+## 2 32-4      Villanova    11.9     8.4 20.3 122.2  92.5 11.1        R32 Big East
+## 3 33-7 North Carolina    11.3     8.2 19.4 121.0  91.5  8.4  Champions      ACC
+## 4 31-5         Kansas    12.1     6.3 18.4 121.5  94.5 11.0         E8   Big 12
+## 5 27-9        Florida     8.5     9.6 18.1 116.6  88.9  6.4         E8      SEC
+## 6 25-9     Louisville     7.9     9.9 17.8 117.6  91.5  6.9        R32      ACC</code></pre>
+<pre class="r"><code>#Creating new variable win percentage
+selected_data&lt;-selected_data%&gt;% separate(W.L,into=c(&quot;wins&quot;,&quot;losses&quot;),remove=FALSE)%&gt;%
+transform(wins=as.numeric(wins),losses=as.numeric(losses))%&gt;%mutate(win_percent=wins/(wins+losses))
+head(selected_data)</code></pre>
+<pre><code>##    W.L wins losses           Team BPI.Off BPI.Def  BPI ADJOE ADJDE  WAB
+## 1 37-2   37      2        Gonzaga    10.8     9.5 20.4 117.8  86.3  7.7
+## 2 32-4   32      4      Villanova    11.9     8.4 20.3 122.2  92.5 11.1
+## 3 33-7   33      7 North Carolina    11.3     8.2 19.4 121.0  91.5  8.4
+## 4 31-5   31      5         Kansas    12.1     6.3 18.4 121.5  94.5 11.0
+## 5 27-9   27      9        Florida     8.5     9.6 18.1 116.6  88.9  6.4
+## 6 25-9   25      9     Louisville     7.9     9.9 17.8 117.6  91.5  6.9
+##   POSTSEASON     Conf win_percent
+## 1        2ND      WCC   0.9487179
+## 2        R32 Big East   0.8888889
+## 3  Champions      ACC   0.8250000
+## 4         E8   Big 12   0.8611111
+## 5         E8      SEC   0.7500000
+## 6        R32      ACC   0.7352941</code></pre>
+<pre class="r"><code>#Table ofsummary statistics
+selected_data%&gt;%group_by(Conf)%&gt;%summarise(mean_wins=mean(wins),sd_wins=sd(wins),var_wins=var(wins),mean_bpi=mean(BPI),sd_bpi=sd(BPI),var_bpi=var(BPI),mean_WAB=mean(WAB),sd_WAB=sd(WAB),var_WAB=var(WAB),max_wins=max(wins),min_wins=min(wins))</code></pre>
+<pre><code>## # A tibble: 32 x 12
+##    Conf      mean_wins sd_wins var_wins mean_bpi sd_bpi var_bpi mean_WAB sd_WAB
+##    &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+##  1 A-Sun          26     NA       NA         5.4 NA      NA        -1.7  NA    
+##  2 A 10           25      1        1        10.1  0.361   0.130     1.07  0.586
+##  3 ACC            24.8    4.18    17.4      14.5  3.78   14.3       5.36  2.49 
+##  4 Am. East       29     NA       NA         9   NA      NA         0.7  NA    
+##  5 American       30      0        0        15.2  0.495   0.245     6     0.566
+##  6 Big 12         25.2    4.26    18.2      14.7  3.09    9.56      6.13  3.31 
+##  7 Big East       23.7    4.39    19.2      11.9  4.11   16.9       3.77  3.72 
+##  8 Big Sky        22     NA       NA         1.4 NA      NA        -5.3  NA    
+##  9 Big South      26     NA       NA         3.7 NA      NA        -1.8  NA    
+## 10 Big Ten        24.6    2.44     5.95     12.1  3.30   10.9       3.47  1.78 
+## # ... with 22 more rows, and 3 more variables: var_WAB &lt;dbl&gt;, max_wins &lt;dbl&gt;,
+## #   min_wins &lt;dbl&gt;</code></pre>
+</div>
+<div id="visualization" class="section level1">
+<h1>Visualization</h1>
+<pre class="r"><code>#Creating a correlation matrix and assigning values for the categorical value postseason.
+library(reshape2)</code></pre>
+<pre><code>## Warning: package &#39;reshape2&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;reshape2&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     smiths</code></pre>
+<pre class="r"><code>df&lt;-total_data%&gt;%select(POSTSEASON,BPI,WAB,BPI.Def,BPI.Off,ADJOE,ADJDE,BPI,SEED)
+df&lt;-df%&gt;%mutate(POSTSEASON=recode(POSTSEASON, &quot;Champions&quot;=7,&quot;2ND&quot;=6,&quot;F4&quot;=5,&quot;E8&quot;=4,&quot;S16&quot;=3,&quot;R32&quot;=2,&quot;R64&quot;=1,&quot;R68&quot;=1))
+head(df)</code></pre>
+<pre><code>##   POSTSEASON  BPI  WAB BPI.Def BPI.Off ADJOE ADJDE SEED
+## 1          6 20.4  7.7     9.5    10.8 117.8  86.3    1
+## 2          2 20.3 11.1     8.4    11.9 122.2  92.5    1
+## 3          7 19.4  8.4     8.2    11.3 121.0  91.5    1
+## 4          4 18.4 11.0     6.3    12.1 121.5  94.5    1
+## 5          4 18.1  6.4     9.6     8.5 116.6  88.9    4
+## 6          2 17.8  6.9     9.9     7.9 117.6  91.5    2</code></pre>
+<pre class="r"><code>cormat&lt;-cor(df)
+abs_cormat&lt;-abs(cormat)
+#Displaying the correlation matrix, absolute value used as some variables are ordered in different directions
+melted_cormat&lt;-melt(abs_cormat)
+ggplot(data=melted_cormat,aes(x=Var1,y=Var2,fill=value))+geom_tile()+scale_fill_gradient2(low=&quot;red&quot;,high=&quot;black&quot;,mid=&quot;white&quot;)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>#Display scatterplot comparing adjusted offense to adjusted defensive rankings with respect to the team&#39;s finish in the tournament. Increased tick marks on scales than default
+df%&gt;%ggplot(aes(x=ADJOE,y=ADJDE,color=POSTSEASON))+
+geom_point(size=3)+
+ggtitle(&quot;Postseason Finish With Respect to Adjusted Offense and Adjusted Defense&quot;)+
+xlab(&quot;Adjusted Offense&quot;)+
+ylab(&quot;Adjusted Defense&quot;)+
+  scale_x_continuous(breaks = round(seq(min(df$ADJOE), max(df$ADJOE), by = 2),1)) +
+  scale_y_continuous(breaks = round(seq(min(df$ADJDE), max(df$ADJDE), by = 2),1))+
+  theme_classic()</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>#Display barplot that includes stat=summary
+df%&gt;% ggplot(aes(x=SEED,y=POSTSEASON))+
+geom_bar(stat=&quot;summary&quot;,fun.y=&quot;mean&quot;)+
+geom_errorbar(stat=&quot;summary&quot;)+
+  ggtitle(&quot;Postseason Finish With Respect to Seeding by the Committee&quot;)+
+  theme_minimal()</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: fun.y</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()`</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()`</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+<p>The first graph created was a correlation heatmap that compared the correlation existing between each of the variables. This was done through first creating a data frame containing only the variables that I wanted to look for a correlation with using the select function. Because the tournament finish was a categorical value, mutate had to be used in order to assign a numerical value so that some correlation could be observed between postseason and the other variables. This was done with recode function with a higher number being assigned depending on how far the team made it in the tournament. Next, I used the melt function to create the correlation map after creating a matrix based off the correlations between the variables. Absolute value was utilized as certain variables like defensive efficiency and seed are ordered the other way (lower value means its better rather than higher). The round of 64 and round of 68 were given equal significance as neither progressed pass the opening day of the tournament. After looking at the correlation matrix, it is immediately apparent that the best predictors for tournament performance in 2017 came from overall seed and BPI, whereas adjusted offensive efficiency was the worst predictor. On the other hand, it’s also apparent that offensive efficiency and defensive efficiency have a negative correlation with each other. It seems that teams that are good on offense have a tendency to be worse on defense and vice-versa.</p>
+<p>Next, I created a scatter plot that looked at adjusted offensive efficiency against adjusted defensive efficiency. This was done using ggplot. I also added more tick marks on both the x scale and the y scale. While the correlation matrix did show that in general, defensive efficiency has a better correlation than offensive correlation when it comes to March Madness results, the scatter plot shows an eye opening observation. It appears that the teams that did the best or made it the furthest in the tournament tended to be teams with a higher adjusted offense than defense. This shows that an elite level of offense tended to be slightly more important when it came to making a very deep run in the 2017 NCAA tournament. Thus, it can be said that for an average team, defense was more important, but for a team that made it especially far, the team tended to have an elite offense rather than defense.</p>
+<p>Lastly, I made a bar plot that utilized stat=summary in order to look at the effect of seeding on how far a team made it into the tournament. This plot shows an exponential relationship with higher seeds tending to make it significantly further into the tournament than a lower seed. In general, it shows that committee members were accurate with how they seeded teams in 2017 for the most part as higher seeded teams made it further than lower seeded teams.</p>
+</div>
+<div id="pca" class="section level1">
+<h1>PCA</h1>
+<pre class="r"><code>#Running princomp on the variables in the dataframe
+df_pca&lt;-princomp(df)
+summary(df_pca)</code></pre>
+<pre><code>## Importance of components:
+##                            Comp.1    Comp.2     Comp.3     Comp.4      Comp.5
+## Standard deviation     12.1066870 5.2277716 1.84951199 1.29876178 1.005606190
+## Proportion of Variance  0.8089249 0.1508311 0.01887869 0.00930929 0.005581018
+## Cumulative Proportion   0.8089249 0.9597559 0.97863462 0.98794391 0.993524927
+##                            Comp.6      Comp.7       Comp.8
+## Standard deviation     0.83189776 0.693317325 2.231511e-02
+## Proportion of Variance 0.00381942 0.002652905 2.748247e-06
+## Cumulative Proportion  0.99734435 0.999997252 1.000000e+00</code></pre>
+<pre class="r"><code>#Deciding number of PCAs to keep
+eigval&lt;-df_pca$sdev^2
+varprop=round(eigval/sum(eigval),2)
+ggplot()+geom_bar(aes(y=varprop,x=1:8),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:8))+
+geom_text(aes(x=1:8,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+scale_x_continuous(breaks=1:10)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>#Results summary
+summary(df_pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                            Comp.1    Comp.2     Comp.3     Comp.4      Comp.5
+## Standard deviation     12.1066870 5.2277716 1.84951199 1.29876178 1.005606190
+## Proportion of Variance  0.8089249 0.1508311 0.01887869 0.00930929 0.005581018
+## Cumulative Proportion   0.8089249 0.9597559 0.97863462 0.98794391 0.993524927
+##                            Comp.6      Comp.7       Comp.8
+## Standard deviation     0.83189776 0.693317325 2.231511e-02
+## Proportion of Variance 0.00381942 0.002652905 2.748247e-06
+## Cumulative Proportion  0.99734435 0.999997252 1.000000e+00
+## 
+## Loadings:
+##            Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## POSTSEASON                       0.495  0.401  0.763              
+## BPI         0.508        -0.222  0.106  0.340 -0.307  0.361  0.580
+## WAB         0.396         0.396 -0.725  0.264  0.272 -0.123       
+## BPI.Def     0.220  0.391 -0.160        -0.142         0.644 -0.573
+## BPI.Off     0.288 -0.324         0.193  0.483 -0.361 -0.270 -0.579
+## ADJOE       0.469 -0.588 -0.316        -0.498  0.293              
+## ADJDE      -0.313 -0.615  0.358         0.160         0.603       
+## SEED       -0.362 -0.101 -0.730 -0.410  0.357  0.172</code></pre>
+<pre class="r"><code>#Showing datapoints of the dataframe with respect to PC1 and PC2
+ggplot()+geom_point(aes(df_pca$scores[,1], df_pca$scores[,2]))+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>library(factoextra)</code></pre>
+<pre><code>## Warning: package &#39;factoextra&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</code></pre>
+<pre class="r"><code>#Showing correlation of variables with respect to the Principle Components
+fviz_pca_var(df_pca,col.var=&quot;contrib&quot;,gradient.cols=c(&quot;red&quot;,&quot;orange&quot;,&quot;yellow&quot;),repel=TRUE)</code></pre>
+<p><img src="/project/project1_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p>I decided on the use of just two Principal components as they account for 96 percent of the variance present in the data. It seems that for principal component one, the bulk of the variance is based off of the variables BPI, WAB, and Seed. This makes sense considering the fact that BPI and WAB are very similar metrics, the only difference being that BPI bases a replacement team as an average D1 team while WAB uses an average bubble team. Also, BPI and WAB are used by the selection committee when deciding on seeding. In theory, these 3 variables should determine how far a team makes it in the tournament barring an upset. However upsets are inevitable as with any sporting event. This 80 percent value in a way shows how accurate the selection committee is as in theory seeding, BPI, and WAB should are modeled to predict how good teams are and would account for all variability in a world where upsets did not happen. On the other hand, PC2 seems to have a mix of most of the other variables other than BPI, WAB, and Seed. PC2 accounts for significantly less variance at 15.1 percent than PC1 at 80.9 percent and does not have any single variable that appears to be significantly affecting it.</p>
 </div>
 
             
