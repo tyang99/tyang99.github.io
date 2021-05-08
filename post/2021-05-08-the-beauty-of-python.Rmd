@@ -1,0 +1,18 @@
+---
+title: The Beauty of Python
+author: Tony Yang
+date: '2021-05-08'
+slug: the-beauty-of-python
+categories: []
+tags: []
+description: ''
+---
+Python is a very popular coding language. The language itself is dynamically typed and runs at a high level, making the syntax simple and the language easy to learn. The very first thing I learned in Python was how to print to the console output. 
+ 
+This was very first line of Python I wrote:
+```{python}
+print("Hello World!")
+```
+
+I self-learned python in high school for the purpose of machine learning in order to make March Madness predictions and help me make decisions on which basketball players to start for daily fantasy games. I learned how to use pandas and scikit-learn to create machine learning models that could predict player performances. I love python and I hope more people can enjoy its beauty.
+![A real panda](https://static01.nyt.com/images/2020/08/16/reader-center/14-panda-baby/14-panda-baby-facebookJumbo.jpg)

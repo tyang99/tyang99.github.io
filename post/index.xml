@@ -8,12 +8,14 @@
     <language>en-US</language>
     <lastBuildDate>Sat, 08 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Lebron James Gets Injured Again</title>
-      <link>/post/2021/05/08/lebron-james-gets-injured-again/</link>
+      <title>The Beauty of Python</title>
+      <link>/post/2021/05/08/the-beauty-of-python/</link>
       <pubDate>Sat, 08 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>/post/2021/05/08/lebron-james-gets-injured-again/</guid>
-      <description>The Lakers look poised for the play-in tournament as Lebron James goes down again. A possibly tough matchup awaits them with the Golden State Warriors. Although many consider Lebron to be invincible, it looks like age is finally starting to catch up with him.</description>
+      <guid>/post/2021/05/08/the-beauty-of-python/</guid>
+      <description>Python is a very popular coding language. The language itself is dynamically typed and runs at a high level, making the syntax simple and the language easy to learn. The very first thing I learned in Python was how to print to the console output.
+This was very first line of Python I wrote:
+print(&amp;quot;Hello World!&amp;quot;)## Hello World!I self-learned python in high school for the purpose of machine learning in order to make March Madness predictions and help me make decisions on which basketball players to start for daily fantasy games.</description>
     </item>
     
   </channel>
